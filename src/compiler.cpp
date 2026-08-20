@@ -13,8 +13,7 @@
 #endif
 
 CompileResult compile(const std::filesystem::path &source_path,
-                      const std::filesystem::path &output_path,
-                      bool enableO2 = true) {
+                      const std::filesystem::path &output_path, bool enableO2) {
   CompileResult result;
   result.success = false;
 
