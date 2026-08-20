@@ -35,11 +35,7 @@ std::filesystem::path exe_directory() {
 #endif
 }
 
-std::filesystem::path
-find_help_file(const std::filesystem::path &explicit_path) {
-  if (!explicit_path.empty()) {
-    return fs::exists(explicit_path) ? explicit_path : fs::path();
-  }
+std::filesystem::path find_nearby_file(const std::string &name) {
   std::vector<fs::path> base_dirs;
   fs::path exe = exe_directory();
   if (!exe.empty()) {
@@ -53,11 +49,19 @@ find_help_file(const std::filesystem::path &explicit_path) {
     base_dirs.push_back(cwd / "docs");
   }
   for (const auto &d : base_dirs) {
-    fs::path cand = d / "file_picker_help.txt";
+    fs::path cand = d / name;
     if (fs::exists(cand))
       return cand;
   }
   return {};
+}
+
+std::filesystem::path
+find_help_file(const std::filesystem::path &explicit_path) {
+  if (!explicit_path.empty()) {
+    return fs::exists(explicit_path) ? explicit_path : fs::path();
+  }
+  return find_nearby_file("file_picker_help.txt");
 }
 
 bool load_help_lines(const std::filesystem::path &path,

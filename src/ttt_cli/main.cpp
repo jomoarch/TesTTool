@@ -18,6 +18,7 @@ const CommandEntry kCommands[] = {
     {"submit", cmd_submit},
     {"view", cmd_view},
     {"remove", cmd_remove},
+    {"help", cmd_help},
 };
 
 } // namespace

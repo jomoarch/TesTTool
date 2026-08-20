@@ -1,0 +1,50 @@
+ttt-cli 使用帮助
+================
+
+用法：
+  ttt-cli add    [--name <名称>] [--dir <目录>] [--time-limit <毫秒>] [--memory-limit <MB>]
+  ttt-cli submit [--name <名称>] [--source <源码路径>] [--non-o2]
+  ttt-cli view   [--name <名称>] [--id <结果文件>]
+  ttt-cli remove [--name <名称>]
+  ttt-cli help
+
+未指定的参数会交互式询问；提示处直接回车会打开全屏文件选择器。
+
+add —— 添加题目
+  --name          题库中的文件夹名称（支持中文）；未指定则询问
+  --dir           测试数据原文件夹（必须存在）；未指定则询问，回车用文件选择器单选文件夹
+  --time-limit    该题时间限制（毫秒）；未指定用全局默认
+  --memory-limit  该题空间限制（MB）；未指定用全局默认
+  名称已存在时先询问是否删除后重建（y/N）。
+
+submit —— 提交代码测评
+  --name          题目名称；未指定则询问，回车用文件选择器从题库选择（只保留末级文件夹名）
+  --source        源代码路径；未指定则询问，回车用文件选择器选择
+  --non-o2        编译时禁用 -O2 优化
+  读取该题限制（problem.conf，缺失回退全局默认）后测评，结果保存到
+  <题库>/<题目>/records/ 下的随机文件名中，并打印摘要与结果路径。
+
+view —— 查看测评记录
+  --name          题目名称；逻辑同 submit
+  --id            结果文件（随机文件名，可传绝对路径或相对路径）；未指定则询问，
+                  回车用文件选择器（初始目录为 records）
+  全屏查看结果：CE 视图或逐测试点视图，↑/↓/j/k/滚轮滚动，
+  CE 视图支持 ←/→ 横向滚动，q/Esc 退出。
+
+remove —— 删除题目
+  --name          要删除的题目名称；未指定则询问，回车用文件选择器从题库选择
+  删除整个题目文件夹（含 tests/ 与 records/）。
+
+help —— 显示本帮助
+
+题库结构（配置中 bank_dir）：
+  <bank>/<name>/problem.conf   该题时间/内存限制
+  <bank>/<name>/tests/         测试数据（.in/.out）
+  <bank>/<name>/records/       测评结果文件
+
+配置文件（key = value 文本格式，首次运行自动创建）：
+  bank_dir                 题库文件夹路径（不存在时自动创建）
+  default_time_limit_ms    默认时间限制（毫秒）
+  default_memory_limit_mb  默认空间限制（MB）
+默认位置：~/.config/ttt-cli/config.txt（Windows 为 %APPDATA%\ttt-cli\config.txt），
+环境变量 TTT_CLI_CONFIG 可指定其他路径。

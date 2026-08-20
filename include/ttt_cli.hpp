@@ -33,6 +33,7 @@ int cmd_add(const CliArgs &args, const CliConfig &cfg);
 int cmd_submit(const CliArgs &args, const CliConfig &cfg);
 int cmd_view(const CliArgs &args, const CliConfig &cfg);
 int cmd_remove(const CliArgs &args, const CliConfig &cfg);
+int cmd_help(const CliArgs &args, const CliConfig &cfg);  // 打印 docs/ttt_cli_help.txt
 
 // ---- 通用辅助（src/ttt_cli/common.cpp）----
 

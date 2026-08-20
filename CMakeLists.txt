@@ -55,13 +55,17 @@ add_executable(ttt-cli
   src/ttt_cli/cmd_submit.cpp
   src/ttt_cli/cmd_view.cpp
   src/ttt_cli/cmd_remove.cpp
+  src/ttt_cli/cmd_help.cpp
 )
 target_link_libraries(ttt-cli PRIVATE tettool)
-# 复制帮助文件到可执行文件旁，使 file_picker 的 H 键帮助可显示
+# 复制帮助文件到可执行文件旁，使 file_picker 的 H 键帮助与 ttt-cli help 可显示
 add_custom_command(TARGET ttt-cli POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
           ${CMAKE_CURRENT_SOURCE_DIR}/docs/file_picker_help.txt
-          ${CMAKE_BINARY_DIR}/file_picker_help.txt)
+          ${CMAKE_BINARY_DIR}/file_picker_help.txt
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          ${CMAKE_CURRENT_SOURCE_DIR}/docs/ttt_cli_help.txt
+          ${CMAKE_BINARY_DIR}/ttt_cli_help.txt)
 
 # ---- 演示程序 ----
 add_executable(run_tests_demo test/src/run_tests_demo.cpp)

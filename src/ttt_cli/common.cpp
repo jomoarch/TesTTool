@@ -163,11 +163,12 @@ void print_usage(const char *prog) {
       "  %s submit [--name <name>] [--source <source_path>] [--non-o2]\n"
       "  %s view   [--name <name>] [--id <test_id>]\n"
       "  %s remove [--name <name>]\n"
+      "  %s help\n"
       "\n"
       "Unspecified options are asked interactively; pressing Enter at a "
       "prompt\n"
       "opens the full-screen file picker where applicable.\n",
-      prog, prog, prog, prog);
+      prog, prog, prog, prog, prog);
 }
 
 bool load_problem_conf(const fs::path &dir, ProblemConf &out) {

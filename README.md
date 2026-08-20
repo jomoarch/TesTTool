@@ -13,7 +13,8 @@
   - `test_result_file`：测评信息包 ↔ 文本文件（易解析、无损、含 CE 标记）。
   - `test_result_viewer`：全屏查看结果文件（支持滚动与鼠标滚轮）。
 - **ttt-cli**：测评机命令行工具（详见 [docs/ttt_cli.md](docs/ttt_cli.md)）：
-  `add` 添加题目、`submit` 提交代码测评、`view` 查看记录、`remove` 删除题目；
+  `add` 添加题目、`submit` 提交代码测评、`view` 查看记录、`remove` 删除题目、
+  `help` 显示帮助（内容在 `docs/ttt_cli_help.txt`）；
   带配置文件与 file_picker 集成，操作实现拆分在 `src/ttt_cli/` 下便于扩展。
 
 ## 构建
