@@ -22,6 +22,7 @@
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <map>
@@ -494,14 +495,26 @@ int cmd_submit(const CliArgs &args, const CliConfig &cfg) {
     return 1;
   }
 
-  // 摘要
+  // 摘要（数字右对齐：先统计各列最大宽度，再用 %*d / %*.2f 动态宽度输出，
+  // 整数与小数 printf 均默认右对齐；状态文本 %-*s 左对齐补齐，保证列对齐）
+  int id_w = 1, v_w = 1, time_w = 1, mem_w = 0;
+  char mem_buf[32];
+  for (const auto &c : result.cases) {
+    id_w = std::max(id_w, static_cast<int>(std::to_string(c.id).size()));
+    v_w = std::max(
+        v_w, static_cast<int>(std::string(verdict_name(c.verdict)).size()));
+    time_w =
+        std::max(time_w, static_cast<int>(std::to_string(c.time_ms).size()));
+    std::snprintf(mem_buf, sizeof(mem_buf), "%.2f", c.memory_mb);
+    mem_w = std::max(mem_w, static_cast<int>(std::strlen(mem_buf)));
+  }
   std::printf("compile: %s\n", result.compile_ok ? "OK" : "FAILED");
   if (!result.compile_ok) {
     std::printf("  %s\n", result.compile_message.c_str());
   }
   for (const auto &c : result.cases) {
-    std::printf("  #%d %s %dms %.2fMB", c.id, verdict_name(c.verdict),
-                c.time_ms, c.memory_mb);
+    std::printf("  #%*d %-*s %*dms %*.2fMB", id_w, c.id, v_w,
+                verdict_name(c.verdict), time_w, c.time_ms, mem_w, c.memory_mb);
     if (!c.message.empty())
       std::printf(" %s", c.message.c_str());
     std::printf("\n");
