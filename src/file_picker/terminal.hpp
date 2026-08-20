@@ -28,19 +28,26 @@ enum class KeyKind {
   Char, // 可打印字符，码点在 ch 中
   Esc,  // 单独按下 Esc
   CtrlC,
-  Unknown, // 识别但未使用的键（Delete、Tab、功能键等）
+  WheelUp,   // 鼠标滚轮向上（启用鼠标追踪后）
+  WheelDown, // 鼠标滚轮向下
+  MouseLeft, // 鼠标左键按下，坐标在 x/y（1-based 终端行列）
+  Unknown,   // 识别但未使用的键（Delete、Tab、功能键、鼠标点击等）
 };
 
 struct KeyEvent {
   KeyKind kind = KeyKind::None;
   char32_t ch = 0; // kind==Char 时的 Unicode 码点
+  int x = 0;       // kind==MouseLeft 时的列（1-based）
+  int y = 0;       // kind==MouseLeft 时的行（1-based）
 };
 
 // 平台无关的终端抽象。
 //   Linux/macOS: termios 原始模式 + ANSI 转义序列 + ioctl(TIOCGWINSZ)
 //   Windows:     Win32 控制台 API（启用 ENABLE_VIRTUAL_TERMINAL_PROCESSING
 //                ReadConsoleInputW 读取按键）
-// 进入时：禁用回显/行缓冲、隐藏光标、切换备用屏幕；退出时完全恢复原状
+// 进入时：禁用回显/行缓冲、隐藏光标、切换备用屏幕，并启用鼠标追踪
+// （POSIX: \033[?1000h + \033[?1006h SGR 模式；Windows: ENABLE_MOUSE_INPUT）
+// 滚轮事件以 KeyKind::WheelUp/WheelDown 上报；退出时完全恢复原状
 class Terminal {
 public:
   Terminal();

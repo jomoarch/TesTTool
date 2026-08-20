@@ -145,6 +145,10 @@ SelectionResult pick_files(const SelectionOptions &user_opts) {
           ++help_scroll;
         } else if (ev.kind == KeyKind::Up) {
           --help_scroll;
+        } else if (ev.kind == KeyKind::WheelDown) {
+          ++help_scroll;
+        } else if (ev.kind == KeyKind::WheelUp) {
+          --help_scroll;
         }
         last_size = term.size();
         render_now(last_size);
@@ -215,6 +219,24 @@ SelectionResult pick_files(const SelectionOptions &user_opts) {
       case KeyKind::Backspace:
         state.go_parent();
         break;
+      case KeyKind::WheelUp: // 鼠标滚轮上/下：移动光标
+        state.move_cursor(-1);
+        break;
+      case KeyKind::WheelDown:
+        state.move_cursor(1);
+        break;
+      case KeyKind::MouseLeft: {
+        // 鼠标左键：仅中栏条目区内的点击用于定位光标
+        Renderer::EntryRegion rg = renderer.middle_region(last_size);
+        if (ev.x >= rg.col1 && ev.x <= rg.col2 && ev.y >= rg.row1 &&
+            ev.y <= rg.row2) {
+          size_t target =
+              state.current_listing().scroll +
+              static_cast<size_t>(ev.y - rg.row1); // 点击行 -> 条目索引（含滚动偏移）
+          state.jump_cursor(target);
+        }
+        break;
+      }
       case KeyKind::Esc: // 扩展：Esc 等价于取消
       case KeyKind::CtrlC:
         done = true;
