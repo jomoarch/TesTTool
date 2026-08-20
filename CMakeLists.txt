@@ -67,6 +67,12 @@ add_custom_command(TARGET ttt-cli POST_BUILD
           ${CMAKE_CURRENT_SOURCE_DIR}/docs/ttt_cli_help.txt
           ${CMAKE_BINARY_DIR}/ttt_cli_help.txt)
 
+# ---- 交互式外壳 ----
+add_executable(ttt src/ttt/main.cpp)
+target_link_libraries(ttt PRIVATE tettool)
+# 转交命令需要旁边有 ttt-cli（POST_BUILD 依赖：ttt 依赖 ttt-cli 产物）
+add_dependencies(ttt ttt-cli)
+
 # ---- 演示程序 ----
 add_executable(run_tests_demo test/src/run_tests_demo.cpp)
 target_link_libraries(run_tests_demo PRIVATE tettool)

@@ -16,6 +16,9 @@
   `add` 添加题目、`submit` 提交代码测评、`view` 查看记录、`remove` 删除题目、
   `help` 显示帮助（内容在 `docs/ttt_cli_help.txt`）；
   带配置文件与 file_picker 集成，操作实现拆分在 `src/ttt_cli/` 下便于扩展。
+- **ttt**：交互式外壳（详见 [docs/ttt.md](docs/ttt.md)）：
+  bash 风格提示符（绝对路径 + `$`），内置 `cd`/`ls`/`goto`（file_picker 跳转）/
+  `quit`，其余命令转交 ttt-cli；位置为虚拟位置，不改变真实路径。
 
 ## 构建
 
@@ -24,5 +27,6 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
 ```
 
-产物：`build/ttt-cli`（CLI）、`build/libtettool.a`、`build/run_tests_demo`、
-`build/view_result_demo`、`build/test_test_runner`、`build/test_ttt_cli`。
+产物：`build/ttt`（交互式外壳）、`build/ttt-cli`（CLI）、`build/libtettool.a`、
+`build/run_tests_demo`、`build/view_result_demo`、`build/test_test_runner`、
+`build/test_ttt_cli`。
