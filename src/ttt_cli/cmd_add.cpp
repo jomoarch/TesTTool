@@ -8,6 +8,65 @@
 
 namespace fs = std::filesystem;
 
+namespace {
+
+std::string format_number(int v) { return std::to_string(v); }
+
+std::string format_number(float v) {
+  char buf[32];
+  std::snprintf(buf, sizeof(buf), "%.2f", v);
+  return buf;
+}
+
+bool parse_positive_int(const std::string &s, int &v) {
+  try {
+    int x = std::stoi(s);
+    if (x <= 0)
+      return false;
+    v = x;
+    return true;
+  } catch (...) {
+    return false;
+  }
+}
+
+bool parse_positive_float(const std::string &s, float &v) {
+  try {
+    float x = std::stof(s);
+    if (x <= 0)
+      return false;
+    v = x;
+    return true;
+  } catch (...) {
+    return false;
+  }
+}
+
+// 交互询问一个正数：提示中显示默认值，回车（空输入）用默认
+// 输入非法时打印错误并重新询问；EOF（Ctrl-D）返回 false
+// parse 把字符串解析到 out，非法返回 false
+template <typename T>
+bool ask_positive(const char *name, const char *unit, const T &def, T &out,
+                  bool (*parse)(const std::string &, T &)) {
+  for (;;) {
+    std::string hint = std::string(name) + " (" + unit + ", default " +
+                       format_number(def) + "): ";
+    std::string line;
+    if (!prompt_line(hint, line))
+      return false;
+    line = trim(line);
+    if (line.empty()) {
+      out = def;
+      return true;
+    }
+    if (parse(line, out))
+      return true;
+    std::fprintf(stderr, "error: invalid %s: %s\n", name, line.c_str());
+  }
+}
+
+} // namespace
+
 int cmd_add(const CliArgs &args, const CliConfig &cfg) {
   if (!ensure_dir(cfg.bank_dir, "problem bank directory"))
     return 1;
@@ -90,6 +149,11 @@ int cmd_add(const CliArgs &args, const CliConfig &cfg) {
                    args.values.at("time-limit").c_str());
       return 1;
     }
+  } else {
+    int v = 0;
+    if (!ask_positive("Time limit", "ms", time_limit, v, parse_positive_int))
+      return 1;
+    time_limit = v;
   }
   if (args.values.count("memory-limit")) {
     try {
@@ -102,6 +166,12 @@ int cmd_add(const CliArgs &args, const CliConfig &cfg) {
                    args.values.at("memory-limit").c_str());
       return 1;
     }
+  } else {
+    float v = 0.0f;
+    if (!ask_positive("Memory limit", "MB", memory_limit, v,
+                      parse_positive_float))
+      return 1;
+    memory_limit = v;
   }
 
   if (!ensure_dir(problem_dir, "problem directory"))
