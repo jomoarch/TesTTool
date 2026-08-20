@@ -6,6 +6,7 @@
 ttt-cli add    [--name <name>] [--dir <dir_path>] [--time-limit <ms>] [--memory-limit <mb>]
 ttt-cli submit [--name <name>] [--source <source_path>] [--non-o2]
 ttt-cli view   [--name <name>] [--id <test_id>]
+ttt-cli remove [--name <name>]
 ```
 
 未指定的参数会交互式询问；提示处直接回车会打开全屏文件选择器（file_picker）。
@@ -62,6 +63,26 @@ ttt-cli view   [--name <name>] [--id <test_id>]
 打开后进入全屏结果查看器（`test_result_viewer`）：CE 视图或逐测试点视图，
 `↑/↓/j/k`/滚轮滚动，CE 视图支持 `←/→` 横向滚动，`q`/`Esc` 退出。
 无法解析的文件显示错误提示。
+
+## remove：删除题目
+
+| 参数 | 说明 |
+| --- | --- |
+| `--name <name>` | 要删除的题目名称；未指定则询问，回车用文件选择器从题库选择 |
+
+删除整个题目文件夹（含 `tests/` 与 `records/`）；题目不存在时报错。
+
+## 源码结构
+
+- `include/ttt_cli.hpp`：各操作共享的类型（`CliArgs`/`ProblemConf`）与接口声明。
+- `src/ttt_cli/`：操作的实现按文件拆分：
+  - `main.cpp`：入口，按命令表分发（`kCommands[]`）；
+  - `common.cpp`：交互输入、文件选择器封装、题目名校验、结果文件名、参数解析、`problem.conf` 读写等通用辅助；
+  - `cmd_add.cpp` / `cmd_submit.cpp` / `cmd_view.cpp` / `cmd_remove.cpp`：各操作实现。
+
+新增操作（如 `help`/`config`）只需：在 `ttt_cli.hpp` 声明 `int cmd_xxx(...)`、
+新建 `src/ttt_cli/cmd_xxx.cpp` 实现、CMakeLists 的 `ttt-cli` 目标加一个源文件、
+`main.cpp` 命令表加一行、更新 `print_usage`。
 
 ## 退出码
 

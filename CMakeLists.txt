@@ -47,8 +47,15 @@ if(WIN32)
   target_link_libraries(tettool PRIVATE kernel32 user32)
 endif()
 
-# ---- CLI 程序 ----
-add_executable(ttt-cli src/ttt_cli.cpp)
+# ---- CLI 程序（各操作拆分在 src/ttt_cli/ 下）----
+add_executable(ttt-cli
+  src/ttt_cli/main.cpp
+  src/ttt_cli/common.cpp
+  src/ttt_cli/cmd_add.cpp
+  src/ttt_cli/cmd_submit.cpp
+  src/ttt_cli/cmd_view.cpp
+  src/ttt_cli/cmd_remove.cpp
+)
 target_link_libraries(ttt-cli PRIVATE tettool)
 # 复制帮助文件到可执行文件旁，使 file_picker 的 H 键帮助可显示
 add_custom_command(TARGET ttt-cli POST_BUILD
