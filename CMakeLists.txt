@@ -15,6 +15,12 @@ else()
   add_compile_options(-Wall -Wextra)
 endif()
 
+# ---- 便携（预编译）构建选项 ----
+# 开启后，MinGW 下静态链接 GCC/C++ 运行库（libgcc_s_seh、libstdc++）
+# 生成的 exe 不再依赖外部 DLL（Win10/11 系统自带 UCRT）
+# 可直接把 exe 拷到其他电脑运行
+option(TTT_STATIC_RUNTIME "静态链接 GCC/C++ 运行库，生成单文件便携 exe" OFF)
+
 # ---- 核心库 ----
 add_library(tettool STATIC
   src/compiler.cpp
@@ -88,3 +94,18 @@ target_link_libraries(test_ttt_cli PRIVATE tettool)
 enable_testing()
 add_test(NAME test_runner_unit COMMAND test_test_runner)
 add_test(NAME ttt_cli_config_unit COMMAND test_ttt_cli)
+
+# ---- 便携构建：静态链接 GCC/C++ 运行库 ----
+if(TTT_STATIC_RUNTIME AND MINGW)
+  foreach(_tgt ttt ttt-cli run_tests_demo view_result_demo test_test_runner test_ttt_cli)
+    target_link_options(${_tgt} PRIVATE -static -static-libgcc -static-libstdc++)
+  endforeach()
+endif()
+
+# ---- 安装规则：cmake --install --prefix <dir> 生成可分发的目录 ----
+include(GNUInstallDirs)
+install(TARGETS ttt ttt-cli RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/docs/file_picker_help.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/docs/ttt_cli_help.txt
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
