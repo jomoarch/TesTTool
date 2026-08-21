@@ -292,8 +292,9 @@ int run_cli_command(const fs::path &exe, const std::vector<std::string> &args,
 
 int main() {
   fs::path vcwd = fs::absolute(fs::current_path()).lexically_normal();
-  std::printf("ttt: interactive shell. Built-in: cd, ls, goto, quit (exit).\n"
-              "Other commands (add/submit/view/remove/help) run as ttt-cli.\n");
+  std::printf(
+      "ttt: interactive shell. Built-in: cd, ls, goto, quit (exit).\n"
+      "Other commands (add/submit/view/remove/help) run as ttt-cli.\n\n");
 
   for (;;) {
     std::printf("[%s]$ ", vcwd.string().c_str());
